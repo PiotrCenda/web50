@@ -1,0 +1,16 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    New entry
+{% endblock %}
+
+{% block body %}
+    <form action="{% url 'wiki:new_entry' %}" method="POST">
+    {% csrf_token %}
+        <label class="form-label">Entry title:</label>
+        <input type="text" class="form-control new w-75" name="entry_title" placeholder="Title">
+        <label class="form-label">Entry body:</label>
+        <textarea class="form-control new w-75"  rows="12" name="entry_body" placeholder="Body"></textarea>
+        <button class="btn btn-outline-primary" type="submit" id="button-addon2">Create new entry</button>
+    </form>
+{% endblock %}

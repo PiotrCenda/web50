@@ -1,0 +1,20 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    {{entry}}
+{% endblock %}
+
+
+{% block nav %}
+    {% if entry_body%}
+        <a href="{% url 'wiki:edit_entry' entry%}">Edit this entry</a>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    {% if entry_body%}
+        {{entry_body|safe}}
+    {% else %}
+        <h1>404: Page not found</h1>
+    {% endif %}
+{% endblock %}
