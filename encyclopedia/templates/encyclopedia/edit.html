@@ -1,0 +1,20 @@
+{% extends "encyclopedia/layout.html" %}
+
+{% block title %}
+    Edit {{entry}} entry
+{% endblock %}
+
+{% block body %}
+    <form action="{% url 'wiki:edit_entry' entry %}" method="POST">
+    {% csrf_token %}
+
+        <label class="form-label">{{entry}} entry body:</label>
+        {% if entry_body %}
+            <textarea class="form-control new w-75" minlength="1" rows="15" name="entry_body">{{entry_body|safe}}</textarea>
+        {% else %}
+            <textarea class="form-control new w-75" minlength="1" rows="15" name="entry_body" placeholder="Create entry body"></textarea>
+        {% endif %}
+
+        <button class="btn btn-outline-primary" type="submit" id="button-addon2">Edit entry</button>
+    </form>
+{% endblock %}
