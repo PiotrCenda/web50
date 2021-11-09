@@ -1,0 +1,71 @@
+body {
+    padding: 10px;
+}
+
+h1, body > h2, body > div {
+    margin: 15px;
+}
+
+h2 {
+    margin-bottom: 15px;
+}
+
+div {
+    margin: 5px;
+}
+
+form {
+    margin-bottom: 20px;
+}
+
+img {
+    max-width: 300px;
+    max-height: 300px;
+    height: auto;
+    width: auto;
+}
+
+button {
+    margin-top: 15px;
+}
+
+.image-parent {
+    padding: 5px;
+    margin-right: 20px;
+}
+
+.flex-column {
+    margin: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.auction-container {
+    margin-top: 40px;
+}
+
+.auction-container img {
+    max-width: 420px;
+    max-height: 420px;
+}
+
+.comment-container, .bid-container {
+    margin: 30px;
+}
+
+.error {
+    color: red;
+    margin: 30px;
+}
+
+.winner{
+    color: limegreen;
+    margin: 20px;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.no-comment {
+    margin-left: 30px;
+}

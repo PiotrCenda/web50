@@ -1,0 +1,33 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+	<h2>Active Listings</h2>
+
+	{% for auction in auctions %}
+		<ul class="list-group">
+			<a href="{% url 'auction' auction.id %}" class="list-group-item list-group-item-action d-flex justify-content-between">
+			<div class="flex-column">
+				<div class="title">
+					<h5><strong>{{auction.title}}</strong>
+					<small>({{auction.get_category_display}})</small></h5>
+				</div>
+				<div class="description">
+					<p><small>Short description: {{auction.description}}</small></p>
+				</div>
+				<div class="price">
+					<p>Current price: <strong>{{auction.starting_bid}}$</strong></p>
+				</div>
+				<div class="owner">
+					<p>Owner: {{auction.owner}}</p>
+				</div>
+			</div>
+			<div class="image-parent rounded d-block">
+				<img src="{{auction.image_url}}" class="img-fluid" alt="{{auction.title}} image">
+			</div>
+			</a>
+		</ul>
+	{% empty %}
+		<h4><strong>No auctions now</strong></h4>
+	{% endfor %}
+
+{% endblock %}

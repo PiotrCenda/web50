@@ -1,0 +1,116 @@
+{% extends "auctions/layout.html" %}
+
+{% block title %}
+    {{auction.title}}
+{% endblock %}
+
+
+{% block body %}
+    <div class="auction-container">
+        <div class="row">
+	        <div class="flex-column">
+		        <img src="{{auction.image_url}}" class="img-fluid image-parent rounded d-block" alt="{{auction.title}} image">
+            </div>
+            <div class="flex-column">
+                <div class="title-and-description">
+                    <h2><strong>{{auction.title}}</strong>
+                    <small>({{auction.get_category_display}})</small></h2>
+                    <h4><small>Short description: {{auction.description}}</small></h4>
+                </div>
+                {% if  active %}
+                    <div class="price">
+                        <h4>Current price: {{price}}$<h4>
+                    </div>
+                {% endif %}
+                <div class="owner">
+					<p>Owner: {{auction.owner}}</p>
+				</div>
+            </div>
+            <div class="flex-column ml-auto justify-content-start">
+                {% if user_is_owner %}
+                    <form action="{% url 'close_auction' auction.id %}" method="post">
+                    {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary">Close auction</button>
+                    </form>
+                {% endif %}
+                {% if on_user_watchlist and user.is_authenticated %}
+                    <form action="{% url 'remove_watchlist' auction.id %}" method="post">
+                    {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary">Remove from watchlist</button>
+                    </form>
+                {% elif user.is_authenticated %}
+                    <form action="{% url 'add_watchlist' auction.id %}" method="post">
+                    {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary">Add to watchlist</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+	</div>
+    
+    {% if user.is_authenticated and active %}
+        <hr>
+
+        <h2>Add bid:</h2>
+
+        {% if bid_error %}
+            <h4 class="error"><small>Error: bid must be greater than current price!</small></h4>
+        {% endif %}
+
+        <div class="bid-container">
+            <div class="form-group w-50">
+                <form action="{% url 'bid_auction' auction.id %}" method="post">
+                {% csrf_token %}
+                {{ bid_form }}
+                    <button type="submit" class="btn btn-primary">Add bid</button>
+                </form>
+            </div>
+        </div>
+
+    {% elif user_win %}
+        <hr>
+
+        <h2>Winner:</h2>
+
+        <h4 class="winner"><strong>You are the winner!</strong></h4>
+    {% elif not active %}
+        <hr>
+
+        <h2>Winner:</h2>
+
+        <h4 class="winner"><strong>{{winner.username}} won {{auction.title}} for {{price}}$!</strong></h4>
+    {% endif %}
+
+    <hr>
+    
+    <h2>Comments</h2>
+    
+    {% for comment in comments%}
+        <div class="list-group w-50">
+            <a href="#" class="list-group-item list-group-item-action flex-column align-items-start">
+                <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ comment.text }}</h5>
+                </div>
+                <small class="text-muted">User: {{ comment.comment_user }}</small>
+                <small class="text-muted">Date: {{ comment.datetime }}</small>
+            </a>
+        </div>
+    {% empty %}
+        <h4 class="no-comment">No comments</h4>
+    {% endfor %}
+    
+    {% if user.is_authenticated %}
+        <hr>
+
+        <div class="comment-container">
+            <div class="form-group w-50">
+                <form action="{% url 'comment_auction' auction.id %}" method="post">
+                {% csrf_token %}
+                {{ comment_form }}
+                    <button type="submit" class="btn btn-primary">Add comment</button>
+                </form>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

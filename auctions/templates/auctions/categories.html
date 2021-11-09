@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+	<h2>Cateogries: </h2>
+
+	{% for category in categories %}
+		<ul class="list-group">
+			<a href="{% url 'show_category' category%}" class="list-group-item list-group-item-action d-flex justify-content-between">
+			{{category}}
+			</a>
+		</ul>
+	{% empty %}
+		<h4><strong>There is no categories yet</strong></h4>
+	{% endfor %}
+
+{% endblock %}
