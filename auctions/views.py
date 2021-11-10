@@ -121,24 +121,26 @@ def auction(request, auction_id):
                 auct = Auction.objects.get(id=auction_id)
                 bid.auction = auct
                 bid.save()
+
+                return HttpResponseRedirect(reverse("auction", args=[auction_id]))
             
             else:
                 bid_error = True
 
     on_user_watchlist = False
     user_is_owner = False
-    user_win = False
+    user_won = False
     
     if request.user.is_authenticated:
         if Auction.objects.get(id=auction_id) in User.objects.get(id=request.user.id).watchlist.all():
             on_user_watchlist = True
         
-        if User.objects.get(id=request.user.id) == Auction.objects.get(id=auction_id).owner and Auction.objects.get(id=auction_id).active:
+        if User.objects.get(id=request.user.id) == Auction.objects.get(id=auction_id).owner:
             user_is_owner = True
         
         if Auction.objects.get(id=auction_id).auction_bids.order_by('-value').first() is not None:
             if User.objects.get(id=request.user.id) == Auction.objects.get(id=auction_id).auction_bids.order_by('-value').first().bid_user and not Auction.objects.get(id=auction_id).active:
-                user_win = True
+                user_won = True
 
 
     return render(request, "auctions/auction.html", {
@@ -151,7 +153,7 @@ def auction(request, auction_id):
         "on_user_watchlist": on_user_watchlist,
         "active": Auction.objects.get(id=auction_id).active,
         "user_is_owner": user_is_owner,
-        "user_win": user_win
+        "user_won": user_won
     })
 
 

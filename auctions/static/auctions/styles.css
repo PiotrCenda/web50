@@ -66,6 +66,16 @@ button {
     text-align: center;
 }
 
+.closed {
+    color: gray;
+    margin-bottom: 100px;
+}
+
+.closed-index {
+    color: gray;
+    margin-bottom: 40px;
+}
+
 .no-comment {
     margin-left: 30px;
 }

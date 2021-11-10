@@ -7,6 +7,9 @@
 		<ul class="list-group">
 			<a href="{% url 'auction' auction.id %}" class="list-group-item list-group-item-action d-flex justify-content-between">
 			<div class="flex-column">
+				{% if not auction.active %}
+                    <h4 class="closed-index"><strong>Auction closed</strong></h4>
+                {% endif %}
 				<div class="title">
 					<h5><strong>{{auction.title}}</strong>
 					<small>({{auction.get_category_display}})</small></h5>
