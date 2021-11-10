@@ -59,7 +59,7 @@
 
         <div class="bid-container">
             <div class="form-group w-50">
-                <form action="{% url 'bid_auction' auction.id %}" method="post">
+                <form action="{% url 'auction' auction.id %}" method="post">
                 {% csrf_token %}
                 {{ bid_form }}
                     <button type="submit" class="btn btn-primary">Add bid</button>
@@ -78,7 +78,7 @@
 
         <h2>Winner:</h2>
 
-        <h4 class="winner"><strong>{{winner.username}} won {{auction.title}} for {{price}}$!</strong></h4>
+        <h4 class="winner"><strong>{{user.username}} won {{auction.title}} for {{price}}$!</strong></h4>
     {% endif %}
 
     <hr>

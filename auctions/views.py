@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 
-from .models import Auction, Comment, User
+from .models import Auction, User
 from .forms import AuctionForm, CommentForm, BidForm
 
 
@@ -99,38 +99,32 @@ def comment_auction(request, auction_id):
     return HttpResponseRedirect(reverse("auction", args=[auction_id]))
 
 
-@login_required
-def bid_auction(request, auction_id):
-    if request.method == "POST" and request.user.is_authenticated:
-        bid_form = BidForm(request.POST)
-
-        if bid_form.is_valid():
-            bid = bid_form.save(commit=False)
-
-            starting_bid = Auction.objects.get(id=auction_id).starting_bid
-            try:
-                highest_bid = Auction.objects.get(id=auction_id).auction_bids.order_by('-value').first().value
-            except AttributeError:
-                highest_bid = 0
-            
-            if bid.value < max(starting_bid, highest_bid):
-                bid.bid_user = request.user
-                auct = Auction.objects.get(id=auction_id)
-                bid.auction = auct
-                bid.save()
-        
-    return HttpResponseRedirect(reverse("auction", args=[auction_id]))
-
-
 def auction(request, auction_id):
     starting_bid = Auction.objects.get(id=auction_id).starting_bid
+    bid_error = False
     
     try:
         highest_bid = Auction.objects.get(id=auction_id).auction_bids.order_by('-value').first().value
     except AttributeError:
         highest_bid = 0
-
+    
     price = max(starting_bid, highest_bid)
+
+    if request.method == "POST" and request.user.is_authenticated:
+        bid_form = BidForm(request.POST)
+
+        if bid_form.is_valid():
+            bid = bid_form.save(commit=False)
+            
+            if bid.value > price:
+                bid.bid_user = request.user
+                auct = Auction.objects.get(id=auction_id)
+                bid.auction = auct
+                bid.save()
+            
+            else:
+                bid_error = True
+
     on_user_watchlist = False
     user_is_owner = False
     user_win = False
@@ -142,8 +136,9 @@ def auction(request, auction_id):
         if User.objects.get(id=request.user.id) == Auction.objects.get(id=auction_id).owner and Auction.objects.get(id=auction_id).active:
             user_is_owner = True
         
-        if User.objects.get(id=request.user.id) == Auction.objects.get(id=auction_id).auction_bids.order_by('-value').first().bid_user and not Auction.objects.get(id=auction_id).active:
-            user_win = True
+        if Auction.objects.get(id=auction_id).auction_bids.order_by('-value').first() is not None:
+            if User.objects.get(id=request.user.id) == Auction.objects.get(id=auction_id).auction_bids.order_by('-value').first().bid_user and not Auction.objects.get(id=auction_id).active:
+                user_win = True
 
 
     return render(request, "auctions/auction.html", {
@@ -152,12 +147,11 @@ def auction(request, auction_id):
         "price": price,
         "comment_form": CommentForm(),
         "bid_form": BidForm(),
-        "bid_error": False,
+        "bid_error": bid_error,
         "on_user_watchlist": on_user_watchlist,
         "active": Auction.objects.get(id=auction_id).active,
         "user_is_owner": user_is_owner,
-        "user_win": user_win,
-        "winner": Auction.objects.get(id=auction_id).auction_bids.order_by('-value').first().bid_user
+        "user_win": user_win
     })
 
 
