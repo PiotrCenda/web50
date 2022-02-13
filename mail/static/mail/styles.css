@@ -1,3 +1,32 @@
 textarea {
     min-height: 400px;
 }
+
+@keyframes fade {
+    0% {
+        scale: 1;
+        border-width: 1px;
+    }
+    50% {
+        scale: 1.04;
+    }
+    100% {
+        scale: 1.02;
+        border-width: 2px;
+        border-color: #888888;
+    }
+}
+
+.list-group-item {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #aaaaaa;
+}
+
+.list-group-item:hover {
+    animation-name: fade;
+    animation-duration: 0.4s;
+    scale: 1.02;
+    border-width: 2px;
+    border-color: #888888;
+}

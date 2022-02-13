@@ -11,8 +11,20 @@
     <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
     <hr>
 
-    <div id="emails-view">
+    <div id="emails-view" class="list-group">
     </div>
+
+    <template id="email-element-template">
+        <div class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 id="subject" class="mb-1"></h5>
+              <small id="time" class="text-muted"></small>
+            </div>
+            <p id="sender" class="mb-1"></p>
+            <small id="body-preview" class="text-muted"></small>
+        </div>
+    </template>
+
 
     <div id="compose-view">
         <h3>New Email</h3>
@@ -27,7 +39,7 @@
                 <input class="form-control" id="compose-subject" placeholder="Subject">
             </div>
             <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
-            <input id="send-email" type="submit" class="btn btn-primary"/>
+            <input type="submit" class="btn btn-primary"/>
         </form>
     </div>
 {% endblock %}

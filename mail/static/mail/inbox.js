@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#sent').addEventListener('click', () => load_mailbox('sent'));
   document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
   document.querySelector('#compose').addEventListener('click', compose_email);
-  document.querySelector('#send-email').addEventListener('click', send_email);
+  document.querySelector('#compose-form').addEventListener('submit', send_email);
 
   // By default, load the inbox
   load_mailbox('inbox');
@@ -23,6 +23,36 @@ function compose_email() {
   document.querySelector('#compose-body').value = '';
 }
 
+function send_email(event) {
+  // Modifies the default beheavor so it doesn't reload the page after submitting.
+  event.preventDefault();
+
+  const recipients = document.querySelector('#compose-recipients').value;
+  const subject = document.querySelector('#compose-subject').value;
+  const body = document.querySelector('#compose-body').value;
+
+  if(recipients === "") {
+    alert("At least one recipient must be given!");
+  } else if (body === "") {
+    alert("Email body must not be empty!");
+  } else {  
+    fetch('/emails', {
+      method: 'POST',
+      body: JSON.stringify({
+          recipients: recipients,
+          subject: subject,
+          body: body
+      })
+    })
+    .then(response => response.json())
+    .then(result => {
+        console.log(result);
+    })
+    .then(() => load_mailbox('sent'))
+    .catch(e => console.log('error: ' + e));
+  }
+}
+
 function load_mailbox(mailbox) {
   
   // Show the mailbox and hide other views
@@ -31,28 +61,29 @@ function load_mailbox(mailbox) {
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+  fetch(`/emails/${mailbox}`)
+  .then(response => response.json())
+  .then(emails => {
+    emails.forEach(email => createEmailElement(email))
+  });
 }
 
-function send_email(event) {
-  event.preventDefault();
+function createEmailElement(email) {
 
-  const recipients = document.querySelector('#compose-recipients').value;
-  const subject = document.querySelector('#compose-subject').value;
-  const body = document.querySelector('#compose-body').value;
-  
-  fetch('/emails', {
-    method: 'POST',
-    body: JSON.stringify({
-        recipients: recipients,
-        subject: subject,
-        body: body
-    })
-  })
-  .then(response => response.json())
-  .then(result => {
-      console.log(result);
-  })
-  .then(() => load_mailbox('sent'))
-  .catch(e => console.log('error: ' + e));
-  
+  const template = document.querySelector('#email-element-template');
+  let element = template.content.cloneNode(true);
+
+  element.querySelector("#subject").textContent = email["subject"];
+  element.querySelector("#time").textContent = email["timestamp"];
+  element.querySelector("#sender").textContent = email["sender"];
+  element.querySelector("#body-preview").textContent = email["body"].slice(0, 30) + "...";
+  element.querySelector("div").style.cursor = "pointer";
+
+  if(email["read"]) {
+    element.querySelector("div").style.backgroundColor = "#eeeeee";
+  }
+
+  document.querySelector('#emails-view').appendChild(element);
+
 }
