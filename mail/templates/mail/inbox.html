@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block body %}
-    <h2>{{ request.user.email }}</h2>
+    <h2 id="user-email">{{ request.user.email }}</h2>
 
     <button class="btn btn-sm btn-outline-primary" id="inbox">Inbox</button>
     <button class="btn btn-sm btn-outline-primary" id="compose">Compose</button>
@@ -11,8 +11,7 @@
     <a class="btn btn-sm btn-outline-primary" href="{% url 'logout' %}">Log Out</a>
     <hr>
 
-    <div id="emails-view" class="list-group">
-    </div>
+    <div id="emails-view" class="list-group"></div>
 
     <template id="email-element-template">
         <div class="list-group-item list-group-item-action flex-column align-items-start">
@@ -25,6 +24,20 @@
         </div>
     </template>
 
+    <div id="detail-view">
+        <div class="small email-info">
+            <p>From: <span class="text-muted" id="sender"></span></p>
+            <p>To: <span class="text-muted" id="recipients"></span></p>
+            <p>Subject: <span class="text-muted" id="subject"></span></p>
+            <p>Time: <span class="text-muted" id="time"></span></p>
+        </div>
+        <hr>
+        <p id="body"></p>
+        <div class="modal-footer">
+            <button id="archive" type="button" class="btn btn-primary"><i class="fas fa-archive"></i>Archive</button>
+            <button id="reply" type="button" class="btn btn-primary"><i class="fas fa-reply"></i>Reply</button>
+        </div>
+    </div>
 
     <div id="compose-view">
         <h3>New Email</h3>

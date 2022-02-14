@@ -15,6 +15,7 @@ function compose_email() {
 
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#detail-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
 
   // Clear out composition fields
@@ -45,9 +46,6 @@ function send_email(event) {
       })
     })
     .then(response => response.json())
-    .then(result => {
-        console.log(result);
-    })
     .then(() => load_mailbox('sent'))
     .catch(e => console.log('error: ' + e));
   }
@@ -57,6 +55,7 @@ function load_mailbox(mailbox) {
   
   // Show the mailbox and hide other views
   document.querySelector('#emails-view').style.display = 'block';
+  document.querySelector('#detail-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
 
   // Show the mailbox name
@@ -64,9 +63,10 @@ function load_mailbox(mailbox) {
 
   fetch(`/emails/${mailbox}`)
   .then(response => response.json())
-  .then(emails => {
-    emails.forEach(email => createEmailElement(email))
-  });
+  .then(emails => {emails.forEach(
+    email => createEmailElement(email))
+  })
+  .catch(e => console.log('error: ' + e));
 }
 
 function createEmailElement(email) {
@@ -74,16 +74,44 @@ function createEmailElement(email) {
   const template = document.querySelector('#email-element-template');
   let element = template.content.cloneNode(true);
 
-  element.querySelector("#subject").textContent = email["subject"];
+
+  element.querySelector("#subject").textContent = (email["subject"].length > 40) ? (email["subject"].slice(0, 40) + "...") : email["subject"];
   element.querySelector("#time").textContent = email["timestamp"];
   element.querySelector("#sender").textContent = email["sender"];
-  element.querySelector("#body-preview").textContent = email["body"].slice(0, 30) + "...";
-  element.querySelector("div").style.cursor = "pointer";
+  element.querySelector("#body-preview").textContent = (email["body"].length > 50) ? (email["body"].slice(0, 50) + "...") : email["body"];
 
   if(email["read"]) {
     element.querySelector("div").style.backgroundColor = "#eeeeee";
   }
 
+  element.querySelector("div").addEventListener('click', () => see_email(email.id))
   document.querySelector('#emails-view').appendChild(element);
+}
 
+function see_email(id) {
+  fetch(`/emails/${id}`)
+  .then(response => response.json())
+  .then(email => createDetailView(email))
+  .catch(e => console.log('error: ' + e));
+
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#detail-view').style.display = 'block';
+  document.querySelector('#compose-view').style.display = 'none';
+
+  fetch(`/emails/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      read: true
+    })})
+    .catch(e => console.log('error: ' + e));
+}
+
+function createDetailView(email) {
+  let element = document.querySelector('#detail-view');
+
+  element.querySelector("#subject").innerText = email["subject"];
+  element.querySelector("#time").innerText = email["timestamp"];
+  element.querySelector("#sender").innerText = email["sender"];
+  element.querySelector("#recipients").innerText = email["recipients"].join(", ");
+  element.querySelector("#body").innerText = email["body"];
 }

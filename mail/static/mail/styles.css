@@ -1,5 +1,6 @@
 textarea {
     min-height: 400px;
+    margin-bottom: 15px;
 }
 
 @keyframes fade {
@@ -29,4 +30,24 @@ textarea {
     scale: 1.02;
     border-width: 2px;
     border-color: #888888;
+    cursor: pointer;
 }
+
+#detail-view > #body {
+    overflow: auto;
+}
+
+#emails-view {
+    margin-bottom: 30px;
+}
+
+#compose-view {
+    margin-bottom: 20px;
+}
+
+
+#user-email {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
