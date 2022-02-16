@@ -7,19 +7,33 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('#compose').addEventListener('click', () => compose_email());
   document.querySelector('#compose-form').addEventListener('submit', send_email);
 
+  // loading animation at page loading and scrolling to the end of mailbox
+  window.onscroll = () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight && document.querySelector('#emails-view').style.display === 'block') {
+      let end_info = document.querySelector("#end-page-info");
+
+      if (end_info.innerText === "") {
+        document.querySelector(".loader-inner").style.display = 'block';
+
+        setTimeout(() => {
+          end_info.innerText = "no more emails";
+          document.querySelector(".loader-inner").style.display = 'none';
+        }, 2000);
+      }
+    }
+  }
+
   // By default, load the inbox
   load_mailbox('inbox');
 });
 
 function compose_email(prefill = "") {
 
-  console.log(prefill)
-  console.log(typeof prefill)
-
   // Show compose view and hide other views
   document.querySelector('#emails-view').style.display = 'none';
   document.querySelector('#detail-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'block';
+  document.querySelector("#end-page-info").style.display = 'none';
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = (prefill) ? prefill["recipient"] : "";
@@ -60,6 +74,8 @@ function load_mailbox(mailbox) {
   document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#detail-view').style.display = 'none';
   document.querySelector('#compose-view').style.display = 'none';
+  document.querySelector("#end-page-info").innerText = "";
+  document.querySelector("#end-page-info").style.display = 'block';
 
   // Show the mailbox name
   document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -91,6 +107,8 @@ function createEmailElement(email, mailbox) {
 }
 
 function see_email(id, mailbox) {
+  document.querySelector("#end-page-info").style.display = 'none';
+
   fetch(`/emails/${id}`)
   .then(response => response.json())
   .then(email => createDetailView(email, mailbox))
