@@ -1,8 +1,9 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from django.core.paginator import Paginator
 
 from .models import User, Post
 
@@ -68,3 +69,28 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+    
+
+def load_posts(request, page): 
+    profile = request.GET.get("profile", None)
+    
+    if profile:
+        posts = Post.objects.filter(owner=profile).all()
+    else:
+        posts = Post.objects.all()
+        
+    posts = posts.order_by("-timestamp").all()  
+    paginator = Paginator(posts, 5)
+    page_obj = paginator.get_page(page)  
+    
+    return JsonResponse({"posts": [post.serialize() for post in page_obj], 
+                         "has_previous": page_obj.has_previous(),
+                         "has_next": page_obj.has_next(),
+                         "current": page}, safe=False)
+    
+
+def profile(request, id):
+    
+    return render(request, "network/profile.html", {
+        
+    })

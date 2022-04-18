@@ -24,8 +24,44 @@
         </div>
         <hr>
     {% endif %}
-    
-    <div class="posts">
-        <ul>
+
+    <div id="posts-label">
+        <label>Posts</label>
     </div>
+    
+    <div id="posts">
+    </div>
+
+    <div id="pagination">
+    </div>
+
+    <template id="pagination-template">
+        <div id="pagination">
+            <ul class="pagination justify-content-center">
+                <li class="page-item">
+                    <a id="previous" class="page-link" href="#">Previous</a>
+                </li>
+                <li class="page-item active" aria-current="page">
+                    <a id="current" class="page-link" href="#"></a>
+                </li>
+                <li class="page-item">
+                    <a id="next" class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </div>
+    </template>
+
+    <template id="post-element-template">
+        <div class="list-group-item flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 id="title" class="mb-1"></h5>
+              <small id="time" class="text-muted"></small>
+            </div>
+            <p id="owner" class="mb-1"></p>
+            <small id="text"></small>
+            <div id="post-bottom" class="d-flex w-100 justify-content-between">
+                <small id="likes" class="text-muted"></small>
+            </div>
+        </div>
+    </template>
 {% endblock %}
